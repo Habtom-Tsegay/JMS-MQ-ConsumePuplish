@@ -1,1 +1,1 @@
-# JMS-MQ-ConsumePuplish
+# JMS-MQ-ConsumePublish
