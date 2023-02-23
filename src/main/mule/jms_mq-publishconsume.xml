@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="74d958af-a461-4602-852d-8537245931ce" >
+		<file:connection />
+	</file:config>
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="9563bce7-7490-4686-9b97-d0f9d2df504e" >
+		<jms:active-mq-connection username="admin" password="admin">
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="86986c52-4d0e-42e9-b450-b01e11ce568e" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config1" doc:name="File Config" doc:id="fcb048b3-e064-4df8-b0cb-4f46ceaf8d72" >
+		<file:connection workingDir="D:\My docs\mule class\Mule Fissh\data\activemq consume" />
+	</file:config>
+	<flow name="jms_mq-publish-Flow" doc:id="07e2664e-2188-4e4f-a493-9814f9fbb83b" >
+		<http:listener doc:name="Listener" doc:id="9a817313-fef6-4a92-ab32-e6383f271950" config-ref="HTTP_Listener_config" path="publish"/>
+		<file:read doc:name="Read" doc:id="3b9403e4-7109-46a3-9922-e94e705139d9" config-ref="File_Config" path="D:\My docs\mule class\Mule Fissh\data\airports.json"/>
+		<jms:publish doc:name="Publish" doc:id="5c64b045-5720-422e-ab22-f22a89d1f316" config-ref="JMS_Config" destination="haby2"/>
+		<set-payload value='"message written successfully"' doc:name="Set Payload" doc:id="1c63107e-ed96-426b-bc3c-bc1f65eef454" />
+	</flow>
+	<flow name="jms_mq-publishconsumeFlow" doc:id="e86ff89f-51b3-414b-92a2-34942c99a10e" >
+		<http:listener doc:name="Listener" doc:id="bad6bca0-d82e-446d-b3d9-80658581832f" config-ref="HTTP_Listener_config" path="consume"/>
+		<jms:consume doc:name="Consume" doc:id="dcab9c91-5191-42a8-bec7-50d86b4cc975" config-ref="JMS_Config" destination="haby2"/>
+		<file:write doc:name="Write" doc:id="acea5fc6-9991-4f28-aa3f-98ac7801e3ba" config-ref="File_Config1" path="D:\My docs\mule class\Mule Fissh\data\activemq consume/output.json"/>
+		<set-payload value="data written successfully" doc:name="Set Payload" doc:id="815391e8-210f-47a5-93d5-07b5c8f11452" />
+	</flow>
+</mule>
